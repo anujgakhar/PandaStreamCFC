@@ -22,3 +22,9 @@ Pass in your auth credentials to the CFC's init() method and start using it.
 To retrieve a list of all your videos simply do:
 	
 	panda.get('/videos.json');	
+	
+### Delete your videos
+
+To delete a video:
+
+		panda.delete('/videos/:id.json');	
