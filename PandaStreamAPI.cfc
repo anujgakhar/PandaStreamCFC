@@ -37,23 +37,27 @@
 		var timestamp = date_iso8601();
 		var apiCall = "";
 		var results = {};
-		var paramtype = "formfield";
-		if(arguments.verb eq "GET" or arguments.verb eq "DELETE"){
-			paramType = "url";
+		var paramtype = "url";
+		if(arguments.verb eq "POST"){
+			paramType = "formfield";
 		}
 		
 		var httpService = new http();
 		httpService.setUrl(api_url() & "#trim(path)#");
-		httpService.setTimeOut(450);
+		httpService.setTimeOut(120);
 		httpService.setMethod(arguments.verb);
 		for(param in arguments.params){
-			httpService.addParam(type="formfield", name="#lcase(param)#", value="#rfc3986_encodedFormat(arguments.params[param])#");
+			httpService.addParam(type="#paramtype#", name="#lcase(param)#", value="#arguments.params[param]#");
 		}
 		httpService.addParam(type="#paramtype#", name="access_key", value="#variables.access_key#");
 		httpService.addParam(type="#paramtype#", name="cloud_id", value="#variables.cloud_id#");
-		httpService.addParam(type="#paramtype#", name="timestamp", value="#rfc3986_encodedFormat(timestamp)#");
-		httpService.addParam(type="#paramtype#", name="signature", value="#rfc3986_encodedFormat(buildSignature(verb, trim(path), params, timestamp))#");
-		
+		httpService.addParam(type="#paramtype#", name="timestamp", value="#timestamp#");
+		if(arguments.verb neq "POST"){
+			httpService.addParam(type="#paramtype#", name="signature", value="#rfc3986_encodedFormat(buildSignature(verb, trim(path), params, timestamp))#");
+		} else {
+			httpService.addParam(type="#paramtype#", name="signature", value="#buildSignature(verb, trim(path), params, timestamp)#");
+		}	
+
 		apiCall = httpService.send().getPrefix();	
 		
 		if(apiCall.statuscode EQ "200 OK" AND IsJson(apiCall.filecontent)){
@@ -90,13 +94,14 @@
 		var query_string = "";
 		var string_to_sign = "";
 		
-		for(param in arguments.params){
-			query_string = ListAppend(query_string, "#lcase(param)#=#rfc3986_encodedFormat(params[param])#", "&");
-		}
-		query_string = ListAppend(query_string,"access_key=#variables.access_key#", "&");
+		query_string = "access_key=#variables.access_key#";
 		query_string = ListAppend(query_string, "cloud_id=#variables.cloud_id#", "&");
 		query_string = ListAppend(query_string, "timestamp=#rfc3986_encodedFormat(arguments.timestamp)#", "&");
-		query_string = ListSort(query_string, "textnocase", "ASC", "&");
+		for(p in arguments.params){
+			query_string = ListAppend(query_string, "#lcase(p)#=#rfc3986_encodedFormat(params[p])#", "&");
+		}
+		
+		query_string = ListSort(query_string, "textnocase", "asc", "&");
 		
 		string_to_sign = arguments.verb &  chr(10) & lcase(variables.api_host) & chr(10) & trim(arguments.path) & chr(10) & query_string;
 		

@@ -17,14 +17,35 @@ Pass in your auth credentials to the CFC's init() method and start using it.
 	secret_key="#SECRET_KEY#"
 	);
 	
-### Listing your videos
+### Sample GET Request
 
 To retrieve a list of all your videos simply do:
 	
-	panda.get('/videos.json');	
+	panda.get('/videos.json');	or
+	panda.get('/videos/:id.json')
 	
-### Delete your videos
+	
+### Sample DELETE Request
 
 To delete a video:
 
-		panda.delete('/videos/:id.json');	
+	panda.delete('/videos/:id.json');	
+	
+### Sample PUT Request
+
+To update a Cloud:
+
+	params = {};
+	params.name = "updated_from_api";
+	panda.put('/clouds/#CLOUD_ID#.json', params);
+	
+### Sample POST Request
+
+To post a video:
+
+	params = {};
+	params.source_url = "http://example.com/path/to/video.mp4";
+	newVideo = panda.post('/videos.json', params);	
+	
+	
+	
