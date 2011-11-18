@@ -133,7 +133,6 @@ API Reference : http://www.pandastream.com/docs/api
 			var stringToSign = "";
 			var queryString = "";
 			var timestamp = date_iso8601();
-			var sortedParams = listSort(structKeyList(arguments.parameters), "textnocase");
 			var paramtype = "URL";
 			if(arguments.method eq "POST"){
 				paramtype = "FORMFIELD";
@@ -148,8 +147,6 @@ API Reference : http://www.pandastream.com/docs/api
 			queryString = ListSort(queryString, "textnocase", "asc", "&");
 			
 			stringToSign = "#arguments.method#\n#variables.instance.host#\n#trim(arguments.path)#\n#queryString#";
-			
-			WriteDump(stringToSign);
 		</cfscript>
 		
 		<cfhttp method="#arguments.method#"
